@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Define the property placeholder to load properties from a file -->
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <context:component-scan base-package="com.MVC"/>
+<!--     Create Driver manager dataSource object-->
+    <bean id = "dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+        <!-- I can also use property tag since there is a setter method in the class: DriverManagerDataSource -->
+
+        <!-- Mysql connector is inside the class path: DriverManagerDatasource so spring automatically detecing it. So dont need to mention the driver explicitly -->
+        <constructor-arg name = "url" value="jdbc:mysql://localhost:3306/StudentDB"/>
+        <constructor-arg name="username" value="root"/>
+        <constructor-arg name="password" value="root"/>
+
+        <!-- Explicitly we can specify the driver manager -->
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+
+        <!-- It will give the warning
+        Loading class `com.mysql.jdbc.Driver'. This is deprecated.
+        The new driver class is `com.mysql.cj.jdbc.Driver'.
+         The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
+        -->
+    </bean>
+
+    <bean id = "JdbcTemplateObj" class="org.springframework.jdbc.core.JdbcTemplate">
+<!--        I need dataSource object from the getDataSource() (i.e) from dataSource bean-->
+        <constructor-arg name="dataSource" ref="dataSource"/>
+    </bean>
+
+<!--     bean for StudentDAO-->
+    <bean id = "studentDAO" class="com.MVC.DAO.StudentDAOImpl">
+        <property name="jdbcTemplate" ref="JdbcTemplateObj"/>
+    </bean>
+
+<!--    <bean id = "Student" class="com.MVC.model.Student">-->
+<!--        <property name="rollNo" value="106"/>-->
+<!--        <property name="name" value="Prem kumar"/>-->
+<!--        <property name="address" value="642,Marriaman Kovil st"/>-->
+<!--    </bean>-->
+</beans>
